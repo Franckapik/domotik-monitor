@@ -1,68 +1,103 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Moniteur Domotik
 
-## Available Scripts
+Moniteur pour visualiser toutes les informations provenant des capteurs (raspberry pi de la maison)
 
-In the project directory, you can run:
 
-### `npm start`
+# Pour commencer
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Le moniteur fonctionne sous Node.js (javascript) et réalise la lecture des informations contenues sur une basse de donnée InfluxDB (timeseries).
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Cloner ce dossier sur votre raspberry
 
-### `npm test`
+Ecrire dans la console :
+```
+git clone https://github.com/Franckapik/domotik-monitor.git
+```
+## Entrer dans le dossier
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+cd domotique-monitor
+```
+## Installer les dépendances (via npm)
+```
+npm update
+```
+## Deployer l'application
 
-### `npm run build`
+```
+npm run build
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Entrer dans le dossier et Lancer l'application
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```
+npm run monitor
+```
+L'application est ensuite disponible sur votre navigateur à l'adresse suivante : http://localhost:3001
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Installer la base de données InfluxDB
 
-### `npm run eject`
+La base de données choisie pour enregistrer les différentes informations provenant des capteurs est **InfluxDB** (Open Source). Ce type de base de données (timeseries) est optimisé pour le stockage de données horodatées.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+> L'installation de la base de donnée est indispensable au fonctionnement de l'application
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Installation automatisée à partir d'un script
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Vous pouvez choisir d'executer un script qui réalisera l'installation de la base de donnée à partir de la **liste de dépot Debian**. Le script vous demandera un nom d'utilisateur et un mot de passe nécessaires ensuite pour la connexion à la base de donnée.
 
-## Learn More
+Dans la console, placer vous à la racine du dossier et inscrivez
+```
+bash influx_install.sh
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Installation manuelle
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Si vous êtes confronté à des erreurs, choisissez l'installation manuelle.
+Pour information, les instructions suivantes sont issues sur la documentation de InfluxDB
 
-### Code Splitting
+>https://docs.influxdata.com/influxdb/v1.5/introduction/installation/
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+1- Assurez-vous que votre Rpi est à jour :
 
-### Analyzing the Bundle Size
+```
+sudo apt-get update && sudo apt-get upgrade
+```
+2- Mise à jour des dépots Debian
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+```
+wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+source /etc/os-release
+test $VERSION_ID = "7" && echo "deb https://repos.influxdata.com/debian wheezy stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+test $VERSION_ID = "8" && echo "deb https://repos.influxdata.com/debian jessie stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+test $VERSION_ID = "9" && echo "deb https://repos.influxdata.com/debian stretch stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
 
-### Making a Progressive Web App
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+3- Installation de InfluxDB
 
-### Advanced Configuration
+```
+sudo apt-get update && sudo apt-get install influxdb
+```
+4- Lancement du service de base de donnée
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+sudo service influxdb start
 
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+5- Création de la base de donnée
+>L'application souhaite par défaut le nom de base de donnée suivant : domotique
+```
+influx -execute 'CREATE DATABASE "domotique"'
+```
+Vous pouvez vérifier que la base de donnée à bien été créée en lançant la commande suivante
+```
+influx -execute 'SHOW DATABASES'
+```
+6- Création d'un utilisateur
+>La ligne suivante nécessite le remplacement des mots USER et PASSWORD par votre nom d'utilisateur et mot de passe personnel choisis.
+```
+influx -execute "create user "USER" with password 'PASSWORD' " -database 'domotique'
+```
+Vous pouvez vérifier que votre nom d'utilisateur à bien été enregistré en lançant la commande suivante
+```
+influx -execute "SHOW USERS"
+```
