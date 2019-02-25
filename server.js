@@ -1,14 +1,14 @@
 const express = require('express')
 var path = require('path');
 const app = express()
-const config = require('./config2');
 const schema = require('./schema');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Influx = require('influxdb-nodejs');
-const db = new Influx('http://192.168.1.78:8086/domotique');
+const db = new Influx('http://localhost:8086/domotique');
+
 const corsOptions = {
-  "origin": "http://localhost:3000",
+  "origin": "*",
   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
   "preflightContinue": false,
   "optionsSuccessStatus": 204,
@@ -37,8 +37,7 @@ app.get('/db', cors(corsOptions), function(req, res) {
   console.log(req.query);
   db.query(req.query.name)
     .set({
-      limit: req.query.limit,
-      order: 'desc'
+      limit: req.query.limit
     })
     .then((data) => {
       // { name: 'http', columns: [ 'time', 'sum' ], values: [ [ '1970-01-01T00:00:00Z', 904 ] ] }

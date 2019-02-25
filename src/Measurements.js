@@ -12,7 +12,7 @@ class Measurements extends Component {
 
   connectDB() {
     (async() => {
-      const measurements = await fetch('http://localhost:3001/measurements', {
+      const measurements = await fetch('/measurements', {
         credentials: 'include',
         mode: "cors" // no-cors, cors, *same-origin
       });

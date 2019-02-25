@@ -14,7 +14,7 @@ class Module extends Component {
   }
 
   getData() {
-    fetch('http://localhost:3001/db?name=' + this.props.name + '&limit=' + this.props.limit).then(response => response.json()).then(data => {
+    fetch('/db?name=' + this.props.name + '&limit=' + this.props.limit).then(response => response.json()).then(data => {
       this.setState({influxData: data});
     })
   }
@@ -45,7 +45,9 @@ class Module extends Component {
               <p><i className="fas fa-check check"></i>{this.props.name} connecté | {this.state.heure_actuelle}
                 <br></br>
               <Charts data={values} valeurs={this.props.valeurs}></Charts> </p>
-              <ul className="list">{
+              <ul className="list">
+	      <li key='time'>Dernière mesure: {moment(values[0][0]).format(('lll'))}</li>
+	      {
                   columns.map((a, i) => {
                     return (<li key={i}>{a}
                       : {values[values.length - 1][i]}
