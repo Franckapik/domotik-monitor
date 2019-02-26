@@ -61,7 +61,7 @@ class App extends Component {
                 ]}></Module>
           }
           {this.state.module === 'jardin' && <Module name="jardin" limit={this.state.limit} valeurs={['hauteur_cuve', 'remplissage']}></Module>}
-          {this.state.module === 'tulikivi' && <Module name="tulikivi" limit={this.state.limit} valeurs={['temperature']}></Module>}
+          {this.state.module === 'tulikivi' && <Module name="tulikivi" limit={this.state.limit} valeurs={['temperature']} strong={['temperature']}></Module>}
 
 
       </div>);

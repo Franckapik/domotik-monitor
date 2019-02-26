@@ -3,6 +3,12 @@ import './App.css';
 import moment from 'moment';
 import 'moment/locale/fr';
 import Charts from './Charts';
+import Values from './Values';
+import Meteo from './Meteo';
+import Jardin from './Jardin';
+import Tulikivi from './Tulikivi';
+import Solaire from './Solaire';
+import Linky from './Linky';
 
 class Module extends Component {
   constructor(props) {
@@ -14,7 +20,7 @@ class Module extends Component {
   }
 
   getData() {
-    fetch('/db?name=' + this.props.name + '&limit=' + this.props.limit).then(response => response.json()).then(data => {
+    fetch('http://localhost:3001/db?name=' + this.props.name + '&limit=' + this.props.limit).then(response => response.json()).then(data => {
       this.setState({influxData: data});
     })
   }
@@ -36,25 +42,28 @@ class Module extends Component {
   }
 
   render() {
-    const values = this.state.influxData.values;
-    const columns = this.state.influxData.columns;
+    const NameModule = this.props.name.charAt(0).toUpperCase()+ this.props.name.substring(1).toLowerCase();
+    console.log(NameModule);
+    var listeComp = {
+      meteo: Meteo,
+      linky: Linky,
+      solaire: Solaire,
+      tulikivi: Tulikivi,
+      jardin: Jardin
+  }
+  var ChildComponent = listeComp[this.props.name];
+
     return (<div className="">
       {
-        values
-          ? <div className="module">
+        this.state.influxData.values
+          ?<div> <div className="module">
               <p><i className="fas fa-check check"></i>{this.props.name} connecté | {this.state.heure_actuelle}
                 <br></br>
-              <Charts data={values} valeurs={this.props.valeurs}></Charts> </p>
-              <ul className="list">
-	      <li key='time'>Dernière mesure: {moment(values[0][0]).format(('lll'))}</li>
-	      {
-                  columns.map((a, i) => {
-                    return (<li key={i}>{a}
-                      : {values[values.length - 1][i]}
-                    </li>)
-                  })
-                }</ul>
+              <Charts data={this.state.influxData.values} valeurs={this.props.valeurs}></Charts> </p>
+              <ChildComponent values={this.state.influxData.values} columns={this.state.influxData.columns} />
             </div>
+            <Values values={this.state.influxData.values} columns={this.state.influxData.columns}></Values>
+</div>
 
           : <span>
               <i className="fas fa-times wrong"></i>

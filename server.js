@@ -5,7 +5,7 @@ const schema = require('./schema');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Influx = require('influxdb-nodejs');
-const db = new Influx('http://localhost:8086/domotique');
+const db = new Influx('http://192.168.1.78:8086/domotique');
 
 const corsOptions = {
   "origin": "*",
@@ -36,9 +36,6 @@ app.get('/measurements', cors(corsOptions), function(req, res) {
 app.get('/db', cors(corsOptions), function(req, res) {
   console.log(req.query);
   db.query(req.query.name)
-    .set({
-      limit: req.query.limit
-    })
     .then((data) => {
       // { name: 'http', columns: [ 'time', 'sum' ], values: [ [ '1970-01-01T00:00:00Z', 904 ] ] }
       res.send(data.results[0].series[0]);

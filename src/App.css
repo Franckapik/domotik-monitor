@@ -83,6 +83,24 @@ ul {
   font-size: 2em;
   padding: 0.3em;
 }
+.values_list {
+  border-right: solid 1px white;
+  text-align: right;
+  padding: 1em;
+  font-size: 0.7em;
+  max-width: 400px;
+}
+
+.box_list {
+  background-color: rgba(73,81,95,0.1);
+  margin: 1em 0 1em 0;
+  padding : 5px;
+}
+
+.values_list i {
+  font-size: 2em;
+  padding: 0.3em;
+}
 
 .range {
   position: absolute;

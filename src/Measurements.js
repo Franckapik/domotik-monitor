@@ -12,8 +12,7 @@ class Measurements extends Component {
 
   connectDB() {
     (async() => {
-      const measurements = await fetch('/measurements', {
-        credentials: 'include',
+      const measurements = await fetch('http://localhost:3001/measurements', {
         mode: "cors" // no-cors, cors, *same-origin
       });
       const data = await measurements.json();
